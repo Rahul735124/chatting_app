@@ -10,7 +10,7 @@ import { persistStore } from 'redux-persist';
 
 let persistor = persistStore(store);
 
-export const BASE_URL="http://localhost:8002"
+export const BASE_URL="https://chatting-app-backend-8hkk.onrender.com"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
