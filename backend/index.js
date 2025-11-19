@@ -20,11 +20,21 @@ const PORT = process.env.PORT || 5000;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json()); 
 app.use(cookieParser());
-const corsOption={
-    origin:'https://chatting-app-frontend-lrli.onrender.com',
-    credentials:true
+// const corsOption={
+//     origin:'https://chatting-app-frontend-lrli.onrender.com',
+//     credentials:true
+// };
+// app.use(cors(corsOption)); 
+
+const corsOption = {
+  origin: "https://chatting-app-frontend-lrli.onrender.com",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
-app.use(cors(corsOption)); 
+app.use(cors(corsOption));
+
+
 
 
 // routes
