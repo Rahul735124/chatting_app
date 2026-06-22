@@ -18,6 +18,7 @@ const ProfileModal = () => {
     const logoutHandler = async () => {
         try {
             const res = await axios.get(`${BASE_URL}/api/v1/user/logout`);
+            localStorage.removeItem("token");
             navigate("/login");
             toast.success(res.data.message);
             dispatch(setAuthUser(null));

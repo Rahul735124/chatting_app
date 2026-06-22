@@ -23,6 +23,7 @@ const Login = () => {
         },
         withCredentials: true
       });
+      localStorage.setItem("token", res.data.token);
       navigate("/");
       console.log(res);
       dispatch(setAuthUser(res.data));
