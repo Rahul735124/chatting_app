@@ -1,43 +1,172 @@
-import React, {useState } from 'react'
-import { IoSend } from "react-icons/io5";
+import React, {useState, useRef } from 'react'
+import { IoSend, IoHappyOutline, IoAttachOutline, IoClose, IoMicOutline, IoStopOutline } from "react-icons/io5";
 import axios from "axios";
 import {useDispatch,useSelector} from "react-redux";
-import { setMessages } from '../redux/messageSlice';
+import { setMessages, setReplyingToMessage } from '../redux/messageSlice';
 import { BASE_URL } from '..';
+import EmojiPicker from 'emoji-picker-react';
 
 const SendInput = () => {
     const [message, setMessage] = useState("");
+    const [file, setFile] = useState(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const typingTimeoutRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+
     const dispatch = useDispatch();
-    const {selectedUser} = useSelector(store=>store.user);
-    const {messages} = useSelector(store=>store.message);
+    const {selectedUser, authUser} = useSelector(store=>store.user);
+    const {messages, replyingToMessage} = useSelector(store=>store.message);
+    const {socket} = useSelector(store=>store.socket);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                const audioFile = new File([audioBlob], "voice.webm", { type: 'audio/webm' });
+                setFile(audioFile);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error("Error accessing microphone", error);
+            alert("Microphone access denied. Please allow microphone permissions.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const handleTyping = (e) => {
+        setMessage(e.target.value);
+        
+        if (!socket || !selectedUser || !authUser) return;
+        
+        socket.emit("typing", { senderId: authUser._id, receiverId: selectedUser._id });
+        
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit("stopTyping", { senderId: authUser._id, receiverId: selectedUser._id });
+        }, 2000);
+    };
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+        if (!message.trim() && !file) return;
+
+        // Immediately stop typing
+        if (socket && selectedUser && authUser) {
+            socket.emit("stopTyping", { senderId: authUser._id, receiverId: selectedUser._id });
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        }
+
+        const formData = new FormData();
+        formData.append("message", message);
+        if (file) {
+            formData.append("image", file);
+        }
+        if (replyingToMessage) {
+            formData.append("replyTo", replyingToMessage._id);
+        }
+
         try {
-            const res = await axios.post(`${BASE_URL}/api/v1/message/send/${selectedUser?._id}`, {message}, {
-                headers:{
-                    'Content-Type':'application/json'
-                },
+            const res = await axios.post(`${BASE_URL}/api/v1/message/send/${selectedUser?._id}`, formData, {
                 withCredentials:true
             });
             dispatch(setMessages([...messages, res?.data?.newMessage]))
+            dispatch(setReplyingToMessage(null));
         } catch (error) {
             console.log(error);
         } 
         setMessage("");
+        setFile(null);
+        setShowEmojiPicker(false);
     }
+
+    const onEmojiClick = (emojiObject) => {
+        setMessage(prev => prev + emojiObject.emoji);
+        handleTyping({ target: { value: message + emojiObject.emoji } }); // Trigger typing for emoji
+    };
+
     return (
-        <form onSubmit={onSubmitHandler} className='px-4 my-3'>
-            <div className='w-full relative'>
+        <form onSubmit={onSubmitHandler} className='px-4 my-3 relative flex flex-col'>
+            {replyingToMessage && (
+                <div className="bg-zinc-800 rounded-t-lg p-3 text-sm border-l-4 border-emerald-500 flex justify-between items-start -mb-2 z-0 opacity-90 pb-4">
+                    <div className="flex flex-col flex-1 overflow-hidden">
+                        <span className="font-bold text-emerald-500 block mb-1">Replying to {replyingToMessage.senderId === authUser._id ? "yourself" : selectedUser.fullName}</span>
+                        {replyingToMessage.message && <p className="text-gray-300 truncate">{replyingToMessage.message}</p>}
+                        {replyingToMessage.image && <span className="italic text-gray-400">📷 Attachment</span>}
+                    </div>
+                    <button type="button" onClick={() => dispatch(setReplyingToMessage(null))} className="text-gray-400 hover:text-white p-1">
+                        <IoClose size={20} />
+                    </button>
+                </div>
+            )}
+            {showEmojiPicker && (
+                <div className='absolute bottom-16 left-4 z-50'>
+                    <EmojiPicker onEmojiClick={onEmojiClick} theme="dark" />
+                </div>
+            )}
+            
+            {file && (
+                <div className="flex items-center gap-2 mb-2 p-2 bg-gray-700 rounded w-fit relative z-10">
+                    {file.type.startsWith('audio/') ? (
+                        <audio controls src={URL.createObjectURL(file)} className="h-10 w-48" />
+                    ) : (
+                        <img src={URL.createObjectURL(file)} alt="preview" className="h-16 w-16 object-cover rounded" />
+                    )}
+                    <button type="button" onClick={() => setFile(null)} className="text-red-500 text-sm hover:underline">Remove</button>
+                </div>
+            )}
+
+            <div className='w-full flex items-center gap-2 bg-gray-600 rounded-lg pr-4 z-10'>
+                <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} className='p-3 text-white hover:text-gray-300'>
+                    <IoHappyOutline size={24} />
+                </button>
+                
+                <label className='p-2 cursor-pointer text-white hover:text-gray-300'>
+                    <IoAttachOutline size={24} />
+                    <input type="file" accept="image/*,audio/*" className="hidden" onChange={(e) => setFile(e.target.files[0])} />
+                </label>
+
+                {isRecording ? (
+                    <button type="button" onClick={stopRecording} className='p-2 text-red-500 hover:text-red-400 animate-pulse'>
+                        <IoStopOutline size={24} />
+                    </button>
+                ) : (
+                    <button type="button" onClick={startRecording} className='p-2 text-white hover:text-gray-300'>
+                        <IoMicOutline size={24} />
+                    </button>
+                )}
+
                 <input
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleTyping}
                     type="text"
                     placeholder='Send a message...'
-                    className='border text-sm rounded-lg block w-full p-3 border-zinc-500 bg-gray-600 text-white'
+                    className='border-none text-sm block w-full p-3 bg-transparent text-white outline-none'
                 />
-                <button type="submit" className='absolute flex inset-y-0 end-0 items-center pr-4'>
-                    <IoSend />
+                <button type="submit" className='text-white hover:text-gray-300 ml-auto'>
+                    <IoSend size={24} />
                 </button>
             </div>
         </form>

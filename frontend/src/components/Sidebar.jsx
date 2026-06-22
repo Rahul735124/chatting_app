@@ -1,34 +1,23 @@
 import React, { useState } from 'react'
 import { BiSearchAlt2 } from "react-icons/bi";
 import OtherUsers from './OtherUsers';
-import axios from "axios";
 import toast from "react-hot-toast";
-import {useNavigate} from "react-router-dom";
 import {useSelector, useDispatch} from "react-redux";
-import { setAuthUser, setOtherUsers, setSelectedUser } from '../redux/userSlice';
-import { setMessages } from '../redux/messageSlice';
-import { BASE_URL } from '..';
- 
+import { setOtherUsers } from '../redux/userSlice';
+import ProfileModal from './ProfileModal';
+import StatusBar from './StatusBar';
+import useGetStatuses from '../hooks/useGetStatuses';
+import useRealTimeStatus from '../hooks/useRealTimeStatus';
+
 const Sidebar = () => {
+    useGetStatuses(); // Fetch statuses when sidebar loads
+    useRealTimeStatus(); // Listen for real-time status updates
+
     const [search, setSearch] = useState("");
     const {otherUsers} = useSelector(store=>store.user);
     const dispatch = useDispatch();
+    const {authUser} = useSelector(store=>store.user);
 
-    const navigate = useNavigate();
-
-    const logoutHandler = async () => {
-        try {
-            const res = await axios.get(`${BASE_URL}/api/v1/user/logout`);
-            navigate("/login");
-            toast.success(res.data.message);
-            dispatch(setAuthUser(null));
-            dispatch(setMessages(null));
-            dispatch(setOtherUsers(null));
-            dispatch(setSelectedUser(null));
-        } catch (error) {
-            console.log(error);
-        }
-    }
     const searchSubmitHandler = (e) => {
         e.preventDefault();
         const conversationUser = otherUsers?.find((user)=> user.fullName.toLowerCase().includes(search.toLowerCase()));
@@ -38,9 +27,33 @@ const Sidebar = () => {
             toast.error("User not found!");
         }
     }
+    
     return (
-        <div className='border-r border-slate-500 p-4 flex flex-col'>
-            <form onSubmit={searchSubmitHandler} action="" className='flex items-center gap-2'>
+        <div className='w-full md:w-auto border-none md:border-r border-slate-500 p-4 flex flex-col'>
+            
+            {/* Top Header Section (Status Bar + Profile Menu) */}
+            <div className="flex justify-between items-center mb-4 gap-2">
+                {/* Status Bar takes up remaining width and scrolls horizontally */}
+                <div className="flex-1 overflow-hidden">
+                    <StatusBar />
+                </div>
+                
+                {/* Profile/Menu Button on the far right */}
+                <button 
+                    onClick={() => document.getElementById('profile_modal').showModal()}
+                    className="btn btn-circle btn-ghost text-white mb-6"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            {/* Mobile-only greeting */}
+            <div className="md:hidden mb-4 text-center">
+                <h1 className='text-2xl text-white font-bold'>Hi, {authUser?.fullName}</h1>
+                <p className='text-sm text-gray-300'>Let's start conversation</p>
+            </div>
+
+            <form onSubmit={searchSubmitHandler} action="" className='flex items-center gap-2 mt-2'>
                 <input
                     value={search}
                     onChange={(e)=>setSearch(e.target.value)}
@@ -53,9 +66,8 @@ const Sidebar = () => {
             </form>
             <div className="divider px-3"></div> 
             <OtherUsers/> 
-            <div className='mt-2'>
-                <button onClick={logoutHandler} className='btn btn-sm'>Logout</button>
-            </div>
+            
+            <ProfileModal />
         </div>
     )
 }

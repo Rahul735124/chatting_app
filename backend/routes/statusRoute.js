@@ -1,5 +1,5 @@
 import express from "express";
-import { getOtherUsers, login, logout, register, updateProfile, resetPassword } from "../controllers/userController.js";
+import { getAllStatuses, uploadStatus, markStatusViewed, deleteStatus } from "../controllers/statusController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
 import multer from "multer";
 import path from "path";
@@ -17,11 +17,9 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.route("/register").post(register);
-router.route("/login").post(login);
-router.route("/logout").get(logout);
-router.route("/reset-password").post(resetPassword);
-router.route("/").get(isAuthenticated, getOtherUsers);
-router.route("/update-profile").post(isAuthenticated, upload.single("profilePhoto"), updateProfile);
+router.route("/upload").post(isAuthenticated, upload.single("image"), uploadStatus);
+router.route("/all").get(isAuthenticated, getAllStatuses);
+router.route("/view/:id").post(isAuthenticated, markStatusViewed);
+router.route("/:id").delete(isAuthenticated, deleteStatus);
 
 export default router;

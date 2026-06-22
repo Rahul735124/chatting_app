@@ -1,6 +1,10 @@
 import { User } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import cloudinary from "../config/cloudinary.js";
+import fs from "fs";
+
+
 
 export const register = async (req, res) => {
     try {
@@ -19,8 +23,8 @@ export const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // profilePhoto
-        const maleProfilePhoto = `https://avatar.iran.liara.run/public/boy?username=${username}`;
-        const femaleProfilePhoto = `https://avatar.iran.liara.run/public/girl?username=${username}`;
+        const maleProfilePhoto = `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
+        const femaleProfilePhoto = `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
 
         await User.create({
             fullName,
@@ -83,12 +87,95 @@ export const logout = (req, res) => {
         console.log(error);
     }
 }
+import { Message } from "../models/messageModel.js";
+import mongoose from "mongoose";
+
 export const getOtherUsers = async (req, res) => {
     try {
         const loggedInUserId = req.id;
         const otherUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-        return res.status(200).json(otherUsers);
+
+        const unreadCounts = await Message.aggregate([
+            { $match: { receiverId: new mongoose.Types.ObjectId(loggedInUserId), isRead: false } },
+            { $group: { _id: "$senderId", count: { $sum: 1 } } }
+        ]);
+
+        const unreadMap = {};
+        unreadCounts.forEach(item => {
+            unreadMap[item._id.toString()] = item.count;
+        });
+
+        const usersWithUnread = otherUsers.map(user => {
+            return {
+                ...user.toJSON(),
+                unreadCount: unreadMap[user._id.toString()] || 0
+            };
+        });
+
+        return res.status(200).json(usersWithUnread);
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const updateProfile = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        
+        if (!req.file) {
+            return res.status(400).json({ message: "No image provided" });
+        }
+        
+        const result = await cloudinary.uploader.upload(req.file.path, { resource_type: "auto" });
+        const photoUrl = result.secure_url;
+        fs.unlinkSync(req.file.path);
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            loggedInUserId,
+            { profilePhoto: photoUrl },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "Profile photo updated successfully",
+            success: true,
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { username, fullName, gender, newPassword } = req.body;
+        
+        if (!username || !fullName || !gender || !newPassword) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: "User not found with this username" });
+        }
+
+        // Verify security details (case insensitive comparison for name)
+        if (user.fullName.toLowerCase() !== fullName.toLowerCase() || user.gender !== gender) {
+            return res.status(400).json({ message: "Security verification failed. Details do not match." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+
+        return res.status(200).json({
+            message: "Password reset successfully",
+            success: true
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
