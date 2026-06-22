@@ -39,6 +39,7 @@ app.use(cors(corsOption));
 
 
 import rateLimit from "express-rate-limit";
+app.set("trust proxy", 1);
 
 // Configure rate limit
 const apiLimiter = rateLimit({
