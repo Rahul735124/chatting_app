@@ -3,12 +3,20 @@ import { Message } from "../models/messageModel.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs";
+import { moderateMessage, generateReply } from "../services/aiService.js";
 
 export const sendMessage = async (req,res) => {
     try {
         const senderId = req.id;
         const receiverId = req.params.id;
         const {message, replyTo} = req.body;
+
+        if (message) {
+            const isUnsafe = await moderateMessage(message);
+            if (isUnsafe) {
+                return res.status(400).json({ message: "Message blocked due to policy violation." });
+            }
+        }
 
         let image = "";
         if(req.file){
@@ -47,6 +55,39 @@ export const sendMessage = async (req,res) => {
         if(receiverSocketId){
             io.to(receiverSocketId).emit("newMessage", JSON.parse(JSON.stringify(newMessage)));
         }
+
+        // Handle AI Assistant
+        if (message && message.startsWith("/ai")) {
+            (async () => {
+                try {
+                    const aiResponseText = await generateReply(message.replace("/ai", "").trim());
+                    const aiMessage = await Message.create({
+                        senderId: senderId,
+                        receiverId: receiverId,
+                        message: aiResponseText,
+                        isBot: true
+                    });
+                    
+                    gotConversation.messages.push(aiMessage._id);
+                    await gotConversation.save();
+                    
+                    const botMessageJson = JSON.parse(JSON.stringify(aiMessage));
+                    
+                    // Emit to receiver
+                    if (receiverSocketId) {
+                        io.to(receiverSocketId).emit("newMessage", botMessageJson);
+                    }
+                    // Emit back to sender so they see the bot's response
+                    const senderSocketId = getReceiverSocketId(senderId);
+                    if (senderSocketId) {
+                        io.to(senderSocketId).emit("newMessage", botMessageJson);
+                    }
+                } catch (error) {
+                    console.error("AI Assistant background error:", error);
+                }
+            })();
+        }
+
         return res.status(201).json({
             newMessage
         })

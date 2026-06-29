@@ -31,6 +31,10 @@ const messageModel = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    isBot:{
+        type:Boolean,
+        default:false
+    },
     reactions: [{
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         emoji: { type: String }

@@ -5,6 +5,7 @@ import connectDB from "./config/database.js";
 import userRoute from "./routes/userRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 import statusRoute from "./routes/statusRoute.js";
+import aiRoute from "./routes/aiRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 // import path from "path";
@@ -57,6 +58,7 @@ app.use("/api", apiLimiter);
 app.use("/api/v1/user",userRoute); 
 app.use("/api/v1/message",messageRoute);
 app.use("/api/v1/status", statusRoute);
+app.use("/api/v1/ai", aiRoute);
 
 app.use("/uploads", express.static("uploads"));
 
