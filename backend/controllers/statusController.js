@@ -42,8 +42,9 @@ export const uploadStatus = async (req, res) => {
 
 export const getAllStatuses = async (req, res) => {
     try {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         // Fetch all non-expired statuses and populate user info and viewers
-        const statuses = await Status.find()
+        const statuses = await Status.find({ createdAt: { $gt: twentyFourHoursAgo } })
             .populate("userId", "fullName profilePhoto username")
             .populate("viewers", "fullName profilePhoto")
             .sort({ createdAt: -1 });
