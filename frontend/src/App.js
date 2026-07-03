@@ -65,7 +65,7 @@ function App() {
   }, [authUser]);
 
   return (
-    <div className="p-0 md:p-4 h-screen flex items-center justify-center">
+    <div className="h-[100dvh] w-full flex items-center justify-center sm:p-4">
       <RouterProvider router={router} />
       <VideoCallModal />
     </div>

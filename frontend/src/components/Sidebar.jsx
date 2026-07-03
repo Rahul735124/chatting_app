@@ -29,7 +29,7 @@ const Sidebar = () => {
     }
     
     return (
-        <div className='w-full md:w-auto border-none md:border-r border-slate-500 p-4 flex flex-col'>
+        <div className='w-full h-full border-none md:border-r border-white/10 p-4 flex flex-col bg-zinc-900/40 md:bg-transparent'>
             
             {/* Top Header Section (Status Bar + Profile Menu) */}
             <div className="flex justify-between items-center mb-4 gap-2">

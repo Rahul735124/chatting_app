@@ -18,11 +18,11 @@ const HomePage = () => {
   }, []);
   const { selectedUser } = useSelector(store => store.user);
   return (
-    <div className='flex w-full h-screen sm:max-w-[90vw] md:w-auto sm:h-[450px] md:h-[550px] sm:rounded-lg overflow-hidden bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-      <div className={`w-full md:w-auto ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
+    <div className='flex w-full h-[100dvh] md:h-[90vh] md:max-w-[1200px] md:rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl bg-zinc-900/70 border-0 md:border border-white/10'>
+      <div className={`w-full md:w-[350px] lg:w-[400px] flex-shrink-0 ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
         <Sidebar />
       </div>
-      <div className={`w-full md:w-auto ${selectedUser ? 'flex' : 'hidden md:flex'}`}>
+      <div className={`flex-1 w-full ${selectedUser ? 'flex' : 'hidden md:flex'}`}>
         <MessageContainer />
       </div>
     </div>

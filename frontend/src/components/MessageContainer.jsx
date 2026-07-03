@@ -117,8 +117,8 @@ const MessageContainer = () => {
         <>
             {
                 selectedUser !== null ? (
-                    <div className='w-full md:min-w-[550px] flex flex-col'>
-                        <div className='flex gap-2 items-center bg-zinc-800 text-white px-4 py-2 mb-2'>
+                    <div className='flex-1 h-full w-full flex flex-col bg-zinc-900/50 md:bg-transparent'>
+                        <div className='flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
                             
                             {!isSelectionMode ? (
                                 <>
@@ -192,9 +192,11 @@ const MessageContainer = () => {
                         {!isSelectionMode && <SendInput />}
                     </div>
                 ) : (
-                    <div className='hidden md:flex md:min-w-[550px] flex-col justify-center items-center'>
-                        <h1 className='text-4xl text-white font-bold'>Hi,{authUser?.fullName} </h1>
-                        <h1 className='text-2xl text-white'>Let's start conversation</h1>
+                    <div className='hidden md:flex flex-1 h-full w-full flex-col justify-center items-center bg-zinc-900/50 md:bg-transparent'>
+                        <div className="bg-zinc-900/50 p-8 rounded-3xl backdrop-blur-md border border-white/5 shadow-xl text-center">
+                            <h1 className='text-4xl text-white font-bold mb-2'>Hi, {authUser?.fullName} 👋</h1>
+                            <h1 className='text-lg text-gray-300'>Select a chat to start messaging</h1>
+                        </div>
                     </div>
                 )
             }

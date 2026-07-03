@@ -201,8 +201,8 @@ const SendInput = () => {
                 </div>
             )}
 
-            <div className='w-full flex items-center gap-2 bg-gray-600 rounded-lg pr-4 z-10'>
-                <div className="flex items-center gap-1 pl-2">
+            <div className='w-full flex items-center gap-1 bg-zinc-800/80 backdrop-blur-xl rounded-full shadow-lg border border-white/10 pr-4 pl-2 z-10 py-1'>
+                <div className="flex items-center gap-1">
                     <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} className='p-1.5 text-white hover:text-gray-300'>
                         <IoHappyOutline size={24} />
                     </button>
