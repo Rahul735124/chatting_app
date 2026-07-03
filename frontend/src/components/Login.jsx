@@ -51,6 +51,7 @@ const Login = () => {
               onChange={(e) => setUser({ ...user, username: e.target.value })}
               className='w-full input input-bordered h-10'
               type="text"
+              autoComplete="username"
               placeholder='Username' />
           </div>
           <div>
@@ -62,6 +63,7 @@ const Login = () => {
               onChange={(e) => setUser({ ...user, password: e.target.value })}
               className='w-full input input-bordered h-10'
               type="password"
+              autoComplete="current-password"
               placeholder='Password' />
           </div>
           <div className='flex justify-between items-center my-2'>

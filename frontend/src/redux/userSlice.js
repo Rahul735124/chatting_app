@@ -68,8 +68,13 @@ const userSlice = createSlice({
             if(state.authUser){
                 state.authUser.profilePhoto = action.payload;
             }
+        },
+        updateBlockedUsers:(state, action)=>{
+            if(state.authUser){
+                state.authUser.blockedUsers = action.payload;
+            }
         }
     }
 });
-export const {setAuthUser,setOtherUsers,setSelectedUser,setOnlineUsers,incrementUnreadCount,clearUnreadCount,updateProfilePhoto,addTypingUser,removeTypingUser,updateLastSeen} = userSlice.actions;
+export const {setAuthUser,setOtherUsers,setSelectedUser,setOnlineUsers,incrementUnreadCount,clearUnreadCount,updateProfilePhoto,updateBlockedUsers,addTypingUser,removeTypingUser,updateLastSeen} = userSlice.actions;
 export default userSlice.reducer;

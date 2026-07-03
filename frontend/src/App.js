@@ -11,11 +11,16 @@ import { setSocket } from './redux/socketSlice';
 import { setOnlineUsers } from './redux/userSlice';
 import { BASE_URL } from '.';
 import VideoCallModal from './components/VideoCallModal';
+import Welcome from './components/Welcome';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />
+  },
+  {
+    path: "/welcome",
+    element: <Welcome />
   },
   {
     path: "/signup",

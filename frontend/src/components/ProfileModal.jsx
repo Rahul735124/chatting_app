@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { setAuthUser, setOtherUsers, setSelectedUser, updateProfilePhoto } from '../redux/userSlice';
 import { setMessages } from '../redux/messageSlice';
 import { BASE_URL } from '..';
-import { IoCamera } from 'react-icons/io5';
+import { IoCamera, IoTrash } from 'react-icons/io5';
 
 const ProfileModal = () => {
     const { authUser } = useSelector(store => store.user);
@@ -28,6 +28,27 @@ const ProfileModal = () => {
             document.getElementById('profile_modal').close();
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const deleteAccountHandler = async () => {
+        if (!window.confirm("Are you absolutely sure you want to delete your account? This action cannot be undone.")) return;
+        
+        try {
+            const res = await axios.delete(`${BASE_URL}/api/v1/user/delete`, { withCredentials: true });
+            if (res.data.success) {
+                localStorage.removeItem("token");
+                navigate("/login");
+                toast.success(res.data.message);
+                dispatch(setAuthUser(null));
+                dispatch(setMessages(null));
+                dispatch(setOtherUsers(null));
+                dispatch(setSelectedUser(null));
+                document.getElementById('profile_modal').close();
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to delete account");
         }
     };
 
@@ -98,12 +119,21 @@ const ProfileModal = () => {
 
                     <div className="w-full divider my-2 border-zinc-600"></div>
 
-                    <button 
-                        onClick={logoutHandler} 
-                        className="btn btn-error w-full text-white"
-                    >
-                        Log out
-                    </button>
+                    <div className="flex w-full gap-2 mt-2">
+                        <button 
+                            onClick={logoutHandler} 
+                            className="btn btn-neutral flex-1 text-white border border-zinc-600"
+                        >
+                            Log out
+                        </button>
+                        <button 
+                            onClick={deleteAccountHandler} 
+                            className="btn btn-error flex-1 text-white"
+                        >
+                            <IoTrash size={18} />
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
             

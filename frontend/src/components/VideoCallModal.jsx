@@ -20,12 +20,15 @@ const VideoCallModal = () => {
 
     const { selectedUser } = useSelector(store => store.user);
 
-    // Auto-play remote stream when available
+    // Auto-play streams when available
     useEffect(() => {
         if (remoteStream && userVideo.current) {
             userVideo.current.srcObject = remoteStream;
         }
-    }, [remoteStream, userVideo]);
+        if (localStream && myVideo.current) {
+            myVideo.current.srcObject = localStream;
+        }
+    }, [remoteStream, localStream, callAccepted, isCalling, userVideo, myVideo]);
 
     const isActiveCall = callAccepted || isCalling;
 

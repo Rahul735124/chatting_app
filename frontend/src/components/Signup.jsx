@@ -67,6 +67,7 @@ const Signup = () => {
               onChange={(e) => setUser({ ...user, username: e.target.value })}
               className='w-full input input-bordered h-10'
               type="text"
+              autoComplete="username"
               placeholder='Username' />
           </div>
           <div>
@@ -78,6 +79,7 @@ const Signup = () => {
               onChange={(e) => setUser({ ...user, password: e.target.value })}
               className='w-full input input-bordered h-10'
               type="password"
+              autoComplete="new-password"
               placeholder='Password' />
           </div>
           <div>
@@ -89,6 +91,7 @@ const Signup = () => {
               onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
               className='w-full input input-bordered h-10'
               type="password"
+              autoComplete="new-password"
               placeholder='Confirm Password' />
           </div>
           <div className='flex items-center my-4'>

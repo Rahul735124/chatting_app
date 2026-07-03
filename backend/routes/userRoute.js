@@ -1,5 +1,5 @@
 import express from "express";
-import { getOtherUsers, login, logout, register, updateProfile, resetPassword } from "../controllers/userController.js";
+import { getOtherUsers, login, logout, register, updateProfile, resetPassword, toggleBlockUser, deleteAccount } from "../controllers/userController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
 import multer from "multer";
 import path from "path";
@@ -24,5 +24,7 @@ router.route("/logout").get(logout);
 router.route("/reset-password").post(resetPassword);
 router.route("/").get(isAuthenticated, getOtherUsers);
 router.route("/update-profile").post(isAuthenticated, upload.single("profilePhoto"), updateProfile);
+router.route("/block/:id").post(isAuthenticated, toggleBlockUser);
+router.route("/delete").delete(isAuthenticated, deleteAccount);
 
 export default router;

@@ -100,6 +100,7 @@ const ForgotPassword = () => {
                             onChange={(e) => setUser({ ...user, newPassword: e.target.value })}
                             className='w-full input input-bordered h-10'
                             type="password"
+                            autoComplete="new-password"
                             placeholder='Enter new password' required />
                     </div>
                     

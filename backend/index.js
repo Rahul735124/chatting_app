@@ -8,6 +8,9 @@ import statusRoute from "./routes/statusRoute.js";
 import aiRoute from "./routes/aiRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
 // import path from "path";
 import { app,server } from "./socket/socket.js";
 dotenv.config({});
@@ -19,6 +22,9 @@ const PORT = process.env.PORT || 5000;
 
 
 // middleware
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(xss());
 app.use(express.urlencoded({extended:true}));
 app.use(express.json()); 
 app.use(cookieParser());

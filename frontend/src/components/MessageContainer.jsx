@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import SendInput from './SendInput'
 import Messages from './Messages';
 import { useSelector, useDispatch } from "react-redux";
-import { setSelectedUser } from '../redux/userSlice';
+import { setSelectedUser, updateBlockedUsers } from '../redux/userSlice';
 import { removeMessages, censorMessages, setMessages } from '../redux/messageSlice';
-import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam } from "react-icons/io5";
+import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam, IoWarning } from "react-icons/io5";
 import { useVideoCall } from '../hooks/useVideoCall';
 import axios from 'axios';
 import { BASE_URL } from '..';
@@ -18,10 +18,13 @@ const MessageContainer = () => {
     const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [selectedMessages, setSelectedMessages] = useState([]);
     const [isSummarizing, setIsSummarizing] = useState(false);
+    const [isBlocking, setIsBlocking] = useState(false);
     const { socket } = useSelector(store => store.socket);
     const { callUser } = useVideoCall();
 
     const isOnline = onlineUsers?.includes(selectedUser?._id);
+    const isBlocked = authUser?.blockedUsers?.includes(selectedUser?._id);
+    const amIBlocked = selectedUser?.blockedUsers?.includes(authUser?._id);
 
     React.useEffect(() => {
         if (selectedUser && authUser && socket) {
@@ -34,6 +37,22 @@ const MessageContainer = () => {
             setSelectedMessages(prev => prev.filter(id => id !== msgId));
         } else {
             setSelectedMessages(prev => [...prev, msgId]);
+        }
+    };
+
+    const handleBlockUser = async () => {
+        setIsBlocking(true);
+        try {
+            const res = await axios.post(`${BASE_URL}/api/v1/user/block/${selectedUser._id}`, {}, { withCredentials: true });
+            if (res.data.success) {
+                dispatch(updateBlockedUsers(res.data.user.blockedUsers));
+                toast.success(res.data.message);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to update block status");
+        } finally {
+            setIsBlocking(false);
         }
     };
 
@@ -154,6 +173,7 @@ const MessageContainer = () => {
                                         <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-zinc-700 rounded-box w-52">
                                             <li><button onClick={() => setIsSelectionMode(true)}>Select Messages</button></li>
                                             <li><button onClick={handleSummarizeChat} disabled={isSummarizing} className="text-emerald-400">✨ Summarize Chat</button></li>
+                                            <li><button onClick={handleBlockUser} disabled={isBlocking} className="text-orange-400">{isBlocked ? "Unblock User" : "Block User"}</button></li>
                                             <li><button onClick={handleClearChat} className="text-red-400">Clear Chat</button></li>
                                         </ul>
                                     </div>
@@ -189,7 +209,21 @@ const MessageContainer = () => {
                             toggleSelection={toggleSelection} 
                         />
                         
-                        {!isSelectionMode && <SendInput />}
+                        {!isSelectionMode && (
+                            isBlocked ? (
+                                <div className="p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
+                                    <IoWarning size={24} className="mx-auto mb-2 text-orange-400" />
+                                    You have blocked this user. Unblock to send messages.
+                                </div>
+                            ) : amIBlocked ? (
+                                <div className="p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
+                                    <IoWarning size={24} className="mx-auto mb-2 text-red-400" />
+                                    You cannot reply to this conversation.
+                                </div>
+                            ) : (
+                                <SendInput />
+                            )
+                        )}
                     </div>
                 ) : (
                     <div className='hidden md:flex flex-1 h-full w-full flex-col justify-center items-center bg-zinc-900/50 md:bg-transparent'>

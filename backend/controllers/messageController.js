@@ -4,12 +4,28 @@ import { getReceiverSocketId, io } from "../socket/socket.js";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs";
 import { moderateMessage, generateReply } from "../services/aiService.js";
+import { User } from "../models/userModel.js";
 
 export const sendMessage = async (req,res) => {
     try {
         const senderId = req.id;
         const receiverId = req.params.id;
         const {message, replyTo} = req.body;
+
+        const sender = await User.findById(senderId);
+        const receiver = await User.findById(receiverId);
+
+        if (!sender || !receiver) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (sender.blockedUsers?.includes(receiverId)) {
+            return res.status(403).json({ message: "You have blocked this user" });
+        }
+
+        if (receiver.blockedUsers?.includes(senderId)) {
+            return res.status(403).json({ message: "You are blocked by this user" });
+        }
 
         if (message) {
             const isUnsafe = await moderateMessage(message);

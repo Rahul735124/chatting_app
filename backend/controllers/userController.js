@@ -72,6 +72,7 @@ export const login = async (req, res) => {
             username: user.username,
             fullName: user.fullName,
             profilePhoto: user.profilePhoto,
+            blockedUsers: user.blockedUsers || [],
             token: token
         });
 
@@ -175,6 +176,64 @@ export const resetPassword = async (req, res) => {
             success: true
         });
 
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const toggleBlockUser = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const targetUserId = req.params.id;
+
+        if (loggedInUserId === targetUserId) {
+            return res.status(400).json({ message: "You cannot block yourself" });
+        }
+
+        const user = await User.findById(loggedInUserId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isBlocked = user.blockedUsers.includes(targetUserId);
+        
+        let updatedUser;
+        if (isBlocked) {
+            updatedUser = await User.findByIdAndUpdate(
+                loggedInUserId,
+                { $pull: { blockedUsers: targetUserId } },
+                { new: true }
+            ).select("-password");
+        } else {
+            updatedUser = await User.findByIdAndUpdate(
+                loggedInUserId,
+                { $push: { blockedUsers: targetUserId } },
+                { new: true }
+            ).select("-password");
+        }
+
+        return res.status(200).json({
+            message: isBlocked ? "User unblocked successfully" : "User blocked successfully",
+            success: true,
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const deleteAccount = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+
+        await User.findByIdAndDelete(loggedInUserId);
+
+        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+            message: "Account deleted successfully.",
+            success: true
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
