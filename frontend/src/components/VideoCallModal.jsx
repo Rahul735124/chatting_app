@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useVideoCall } from '../hooks/useVideoCall';
 import { IoCall, IoClose } from 'react-icons/io5';
+import { MdCallEnd } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
 const VideoCallModal = () => {
@@ -87,8 +88,8 @@ const VideoCallModal = () => {
 
                     {/* Controls */}
                     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6">
-                        <button onClick={endCall} className="btn btn-error btn-circle btn-lg text-white shadow-lg shadow-red-500/50">
-                            <IoClose size={32} />
+                        <button onClick={endCall} className="btn btn-error text-white shadow-lg shadow-red-500/50 px-8 py-3 rounded-full text-lg font-semibold flex items-center gap-2">
+                            <MdCallEnd size={28} /> Hang Up
                         </button>
                     </div>
                 </div>

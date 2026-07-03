@@ -151,6 +151,22 @@ export const useVideoCall = () => {
     };
 
     const handleEndCall = (emit = true) => {
+        // Stop tracks from the video element directly BEFORE state changes unmount it
+        if (myVideo.current && myVideo.current.srcObject) {
+            myVideo.current.srcObject.getTracks().forEach(track => track.stop());
+            myVideo.current.srcObject = null;
+        }
+
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+        }
+        
+        setRemoteStream(null);
+        if (userVideo.current) {
+             userVideo.current.srcObject = null;
+        }
+
         dispatch(setCallEnded(true));
         
         if (emit && callPartnerId) {
@@ -162,11 +178,6 @@ export const useVideoCall = () => {
             connectionRef.current = null;
         }
 
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-            setLocalStream(null);
-        }
-        setRemoteStream(null);
         dispatch(resetCallState());
     };
 
