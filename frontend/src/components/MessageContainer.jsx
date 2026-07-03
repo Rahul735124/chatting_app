@@ -137,7 +137,7 @@ const MessageContainer = () => {
             {
                 selectedUser !== null ? (
                     <div className='flex-1 h-full w-full flex flex-col bg-zinc-900/50 md:bg-transparent overflow-hidden'>
-                        <div className='flex-shrink-0 relative z-50 flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
+                        <div className='flex-shrink-0 relative z-50 flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-2 border-b border-white/5'>
                             
                             {!isSelectionMode ? (
                                 <>
@@ -145,7 +145,7 @@ const MessageContainer = () => {
                                         <IoArrowBack size={24} />
                                     </button>
                                     <div className={`avatar ${isOnline ? 'online' : ''}`}>
-                                        <div className='w-12 rounded-full'>
+                                        <div className='w-10 rounded-full'>
                                             <img src={selectedUser?.profilePhoto} alt="user-profile" />
                                         </div>
                                     </div>
@@ -216,7 +216,7 @@ const MessageContainer = () => {
                                     You cannot reply to this conversation.
                                 </div>
                             ) : (
-                                <div className="flex-shrink-0 bg-zinc-900/80 md:bg-transparent pb-2">
+                                <div className="flex-shrink-0 bg-zinc-900/80 md:bg-transparent pb-0">
                                     <SendInput />
                                 </div>
                             )

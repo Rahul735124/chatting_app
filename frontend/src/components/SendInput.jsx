@@ -157,7 +157,7 @@ const SendInput = () => {
     };
 
     return (
-        <form onSubmit={onSubmitHandler} className='px-4 my-3 relative flex flex-col'>
+        <form onSubmit={onSubmitHandler} className='px-4 mt-3 mb-1 relative flex flex-col'>
             {aiSuggestions && aiSuggestions.length > 0 && (
                 <div className="flex gap-2 overflow-x-auto mb-2 pb-2">
                     {aiSuggestions.map((sug, idx) => (
@@ -230,7 +230,7 @@ const SendInput = () => {
                         onKeyDown={acceptCompletion}
                         type="text"
                         placeholder='Send a message...'
-                        className='border-none text-sm block w-full p-3 bg-transparent text-white outline-none z-10 relative'
+                        className='border-none text-base block w-full p-3 bg-transparent text-white outline-none z-10 relative'
                     />
                     {aiCompletion && message && (
                         <span className="absolute bottom-full left-0 mb-2 px-3 py-1.5 text-sm bg-zinc-700 text-emerald-400 rounded-lg shadow-lg pointer-events-none whitespace-nowrap">
