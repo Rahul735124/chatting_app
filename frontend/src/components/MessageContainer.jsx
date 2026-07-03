@@ -4,7 +4,8 @@ import Messages from './Messages';
 import { useSelector, useDispatch } from "react-redux";
 import { setSelectedUser } from '../redux/userSlice';
 import { removeMessages, censorMessages, setMessages } from '../redux/messageSlice';
-import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose } from "react-icons/io5";
+import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam } from "react-icons/io5";
+import { useVideoCall } from '../hooks/useVideoCall';
 import axios from 'axios';
 import { BASE_URL } from '..';
 import toast from 'react-hot-toast';
@@ -18,6 +19,7 @@ const MessageContainer = () => {
     const [selectedMessages, setSelectedMessages] = useState([]);
     const [isSummarizing, setIsSummarizing] = useState(false);
     const { socket } = useSelector(store => store.socket);
+    const { callUser } = useVideoCall();
 
     const isOnline = onlineUsers?.includes(selectedUser?._id);
 
@@ -138,6 +140,11 @@ const MessageContainer = () => {
                                                 : "Offline"}
                                         </p>
                                     </div>
+
+                                    {/* Video Call Button */}
+                                    <button onClick={() => callUser(selectedUser._id)} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700">
+                                        <IoVideocam size={24} />
+                                    </button>
 
                                     {/* 3-dots Menu */}
                                     <div className="dropdown dropdown-end">

@@ -3,6 +3,7 @@ import userReducer from "./userSlice.js";
 import messageReducer from "./messageSlice.js";
 import socketReducer from "./socketSlice.js";
 import statusReducer from "./statusSlice.js";
+import callReducer from "./callSlice.js";
 import {
     persistReducer,
     FLUSH,
@@ -24,7 +25,8 @@ import {
     user:userReducer,
     message:messageReducer,
     socket:socketReducer,
-    status:statusReducer
+    status:statusReducer,
+    call:callReducer
  })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

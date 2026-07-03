@@ -10,6 +10,7 @@ import io from "socket.io-client";
 import { setSocket } from './redux/socketSlice';
 import { setOnlineUsers } from './redux/userSlice';
 import { BASE_URL } from '.';
+import VideoCallModal from './components/VideoCallModal';
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,7 @@ function App() {
   return (
     <div className="p-0 md:p-4 h-screen flex items-center justify-center">
       <RouterProvider router={router} />
+      <VideoCallModal />
     </div>
   );
 }

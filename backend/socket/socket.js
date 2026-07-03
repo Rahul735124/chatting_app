@@ -100,6 +100,35 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  // WebRTC Video Call Signaling
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    const receiverSocketId = getReceiverSocketId(userToCall);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("callUser", { signal: signalData, from, name });
+    }
+  });
+
+  socket.on("answerCall", (data) => {
+    const callerSocketId = getReceiverSocketId(data.to);
+    if (callerSocketId) {
+      io.to(callerSocketId).emit("callAccepted", data.signal);
+    }
+  });
+
+  socket.on("iceCandidate", (data) => {
+    const receiverSocketId = getReceiverSocketId(data.to);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("iceCandidate", data.candidate);
+    }
+  });
+
+  socket.on("endCall", ({ to }) => {
+    const receiverSocketId = getReceiverSocketId(to);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("endCall");
+    }
+  });
 });
 
 export { app, io, server };
