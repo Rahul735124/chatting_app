@@ -111,6 +111,12 @@ const SendInput = () => {
     const acceptCompletion = (e) => {
         if (e.key === 'Tab' && aiCompletion) {
             e.preventDefault();
+            acceptCompletionClick();
+        }
+    };
+
+    const acceptCompletionClick = () => {
+        if (aiCompletion) {
             setMessage(message + (aiCompletion.startsWith(message) ? aiCompletion.slice(message.length) : aiCompletion));
             dispatch(setAiCompletion(""));
         }
@@ -235,10 +241,12 @@ const SendInput = () => {
                         className='border-none text-base block w-full p-3 bg-transparent text-white outline-none z-10 relative'
                     />
                     {aiCompletion && message && (
-                        <span className="absolute bottom-full left-0 mb-2 px-3 py-1.5 text-sm bg-zinc-700 text-emerald-400 rounded-lg shadow-lg pointer-events-none whitespace-nowrap">
+                        <span 
+                            onClick={acceptCompletionClick}
+                            className="absolute bottom-full left-0 mb-2 px-3 py-1.5 text-sm bg-zinc-700 text-emerald-400 rounded-lg shadow-lg cursor-pointer whitespace-nowrap hover:bg-zinc-600 transition-colors z-50">
                             {aiCompletion.startsWith(message) ? aiCompletion.slice(message.length) : aiCompletion}
-                            <span className="ml-2 text-xs text-gray-400">(Press Tab)</span>
-                            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-700"></div>
+                            <span className="ml-2 text-xs text-gray-400">(Tap or Tab)</span>
+                            <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-zinc-700 pointer-events-none"></div>
                         </span>
                     )}
                 </div>

@@ -8,6 +8,7 @@ const VideoCallModal = () => {
     const {
         answerCall,
         endCall,
+        switchCamera,
         myVideo,
         userVideo,
         localStream,
@@ -80,7 +81,7 @@ const VideoCallModal = () => {
     // 2. If in an active call (or calling someone)
     if (isActiveCall) {
         return (
-            <div className="fixed inset-0 z-[100] bg-zinc-900 flex flex-col">
+            <div className="fixed inset-0 z-[100] bg-zinc-900 flex flex-col" onDoubleClick={switchCamera}>
                 <div className="relative flex-1 w-full h-full">
                     {/* Remote Video (Full Screen) */}
                     {callAccepted ? (

@@ -88,19 +88,20 @@ export const markStatusViewed = async (req, res) => {
             return res.status(200).json({ success: true });
         }
 
-        // Add if not already viewed
+        // Add if not already viewed using $addToSet to prevent duplicates in race conditions
         const hasViewed = status.viewers.some(v => v._id ? v._id.toString() === loggedInUserId.toString() : v.toString() === loggedInUserId.toString());
         if (!hasViewed) {
-            status.viewers.push(loggedInUserId);
-            await status.save();
-            
-            await status.populate("viewers", "fullName profilePhoto");
+            const updatedStatus = await Status.findByIdAndUpdate(
+                statusId,
+                { $addToSet: { viewers: loggedInUserId } },
+                { new: true }
+            ).populate("viewers", "fullName profilePhoto");
             
             const ownerSocketId = getReceiverSocketId(status.userId.toString());
             if (ownerSocketId) {
                 io.to(ownerSocketId).emit("statusViewed", {
-                    statusId: status._id,
-                    viewers: status.viewers
+                    statusId: updatedStatus._id,
+                    viewers: updatedStatus.viewers
                 });
             }
         }

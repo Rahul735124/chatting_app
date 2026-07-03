@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIncomingCall, setCallAccepted, setCallEnded, resetCallState, setIsCalling, setInitiateCallTo } from '../redux/callSlice';
+import { setSelectedUser } from '../redux/userSlice';
 import toast from 'react-hot-toast';
 
 export const useVideoCall = () => {
     const dispatch = useDispatch();
     const { socket } = useSelector((store) => store.socket);
-    const { authUser } = useSelector((store) => store.user);
+    const { authUser, otherUsers } = useSelector((store) => store.user);
     const { isReceivingCall, callerInfo, callAccepted, callEnded, isCalling, callPartnerId, initiateCallTo } = useSelector((store) => store.call);
 
     const [localStream, setLocalStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
+    const [facingMode, setFacingMode] = useState("user");
 
     const myVideo = useRef();
     const userVideo = useRef();
@@ -78,7 +80,7 @@ export const useVideoCall = () => {
 
     const initMedia = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: true });
             setLocalStream(stream);
             if (myVideo.current) {
                 myVideo.current.srcObject = stream;
@@ -88,6 +90,38 @@ export const useVideoCall = () => {
             console.error("Failed to get media devices:", error);
             toast.error("Please allow camera and microphone permissions to continue.");
             return null;
+        }
+    };
+
+    const switchCamera = async () => {
+        const newMode = facingMode === "user" ? "environment" : "user";
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: newMode }, 
+                audio: true 
+            });
+            
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+
+            setLocalStream(stream);
+            setFacingMode(newMode);
+
+            if (myVideo.current) {
+                myVideo.current.srcObject = stream;
+            }
+
+            if (connectionRef.current) {
+                const videoTrack = stream.getVideoTracks()[0];
+                const sender = connectionRef.current.getSenders().find(s => s.track.kind === 'video');
+                if (sender && videoTrack) {
+                    sender.replaceTrack(videoTrack);
+                }
+            }
+        } catch (err) {
+            console.error("Camera switch failed", err);
+            toast.error("Could not switch camera.");
         }
     };
 
@@ -203,6 +237,14 @@ export const useVideoCall = () => {
             socket.emit("endCall", { to: partner });
         }
         
+        // Open chat with the partner we just hung up with (so it doesn't go to Welcome screen)
+        if (partner && otherUsers) {
+            const partnerUser = otherUsers.find(u => u._id === partner);
+            if (partnerUser) {
+                dispatch(setSelectedUser(partnerUser));
+            }
+        }
+        
         if (connectionRef.current) {
             connectionRef.current.close();
             connectionRef.current = null;
@@ -217,6 +259,7 @@ export const useVideoCall = () => {
         callUser,
         answerCall,
         endCall: () => handleEndCall(true),
+        switchCamera,
         myVideo,
         userVideo,
         localStream,
