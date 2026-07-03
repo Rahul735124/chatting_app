@@ -52,30 +52,30 @@ const Welcome = () => {
             <div className="z-10 flex flex-col items-center h-full w-full max-w-md px-6">
                 
                 {/* Logo Section */}
-                <div className="flex flex-col items-center mb-4 mt-8">
-                    <img src="/logo.png" alt="Logo" className="w-56 h-auto mb-2 drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" onError={(e) => e.target.style.display = 'none'} />
+                <div className="flex flex-col items-center mb-2 mt-4">
+                    <img src="/logo.png" alt="Logo" className="w-40 h-auto drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" onError={(e) => e.target.style.display = 'none'} />
                 </div>
 
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold mb-2">
+                <div className="text-center mb-4">
+                    <h2 className="text-xl font-bold mb-1">
                         <span className="text-yellow-400">Welcome</span> to <span className="text-cyan-400">Rchatix</span> 👋
                     </h2>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-gray-300 text-xs">
                         A smarter way to connect with<br/>people around the world.
                     </p>
                 </div>
 
-                <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[100px] mb-4">
+                <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[80px] mb-4">
                     <div className="relative animate-[bounce_3s_infinite]">
-                        <div className="absolute inset-0 bg-blue-500 blur-3xl opacity-30 rounded-full"></div>
-                        <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-md shadow-2xl relative z-10">
-                            <span className="text-5xl">💬</span>
+                        <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-30 rounded-full"></div>
+                        <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-md shadow-2xl relative z-10">
+                            <span className="text-3xl">💬</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Features Section */}
-                <div className="flex justify-between w-full mb-8 gap-2">
+                <div className="flex justify-between w-full mb-6 gap-2">
                     <div className="flex flex-col items-center flex-1 text-center">
                         <div className="w-12 h-12 rounded-2xl bg-purple-600/20 text-purple-400 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                             <IoLockClosed size={20} />
