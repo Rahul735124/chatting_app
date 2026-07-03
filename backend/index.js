@@ -29,7 +29,7 @@ app.use(cookieParser());
 // app.use(cors(corsOption)); 
 
 const corsOption = {
-    origin: [process.env.FRONTEND_URL || 'http://localhost:3000', 'http://localhost:3000'],
+    origin: [process.env.FRONTEND_URL || 'https://chatting-app-navy-eight.vercel.app', 'http://localhost:3000'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

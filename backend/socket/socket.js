@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
+    origin: [process.env.FRONTEND_URL || 'https://chatting-app-navy-eight.vercel.app', 'http://localhost:3000'],
     methods: ["GET", "POST"],
     credentials: true
   },
