@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 body {
-  background: url(../public/bg.avif);
+  background: url('./bg.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
   
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
