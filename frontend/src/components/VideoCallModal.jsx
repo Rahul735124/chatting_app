@@ -15,8 +15,7 @@ const VideoCallModal = () => {
         isReceivingCall,
         callerInfo,
         callAccepted,
-        isCalling,
-        callPartnerId
+        isCalling
     } = useVideoCall();
 
     const { selectedUser } = useSelector(store => store.user);

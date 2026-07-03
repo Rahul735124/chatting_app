@@ -57,6 +57,7 @@ export const useVideoCall = () => {
             socket.off("iceCandidate");
             socket.off("endCall");
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket, isReceivingCall, isCalling, callAccepted, dispatch]);
 
     const initMedia = async () => {

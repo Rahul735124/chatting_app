@@ -14,6 +14,7 @@ const HomePage = () => {
     if (!authUser) {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { selectedUser } = useSelector(store => store.user);
   return (
