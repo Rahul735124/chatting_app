@@ -70,7 +70,7 @@ function App() {
   }, [authUser]);
 
   return (
-    <div className="h-[100dvh] w-full flex items-center justify-center sm:p-4">
+    <div className="fixed inset-0 h-[100dvh] w-full flex items-center justify-center sm:p-4 overflow-hidden">
       <RouterProvider router={router} />
       <VideoCallModal />
     </div>

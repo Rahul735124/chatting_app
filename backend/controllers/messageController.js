@@ -19,10 +19,6 @@ export const sendMessage = async (req,res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (sender.blockedUsers?.includes(receiverId)) {
-            return res.status(403).json({ message: "You have blocked this user" });
-        }
-
         if (receiver.blockedUsers?.includes(senderId)) {
             return res.status(403).json({ message: "You are blocked by this user" });
         }
@@ -50,12 +46,15 @@ export const sendMessage = async (req,res) => {
                 participants:[senderId, receiverId]
             })
         };
+        const isReceiverBlockedBySender = sender.blockedUsers?.includes(receiverId);
+
         const newMessage = await Message.create({
             senderId,
             receiverId,
             message: message || "",
             image,
-            replyTo: replyTo || null
+            replyTo: replyTo || null,
+            deletedBy: isReceiverBlockedBySender ? [receiverId] : []
         });
         if(newMessage){
             gotConversation.messages.push(newMessage._id);
@@ -68,7 +67,7 @@ export const sendMessage = async (req,res) => {
 
         // SOCKET IO
         const receiverSocketId = getReceiverSocketId(receiverId);
-        if(receiverSocketId){
+        if(receiverSocketId && !isReceiverBlockedBySender){
             io.to(receiverSocketId).emit("newMessage", JSON.parse(JSON.stringify(newMessage)));
         }
 

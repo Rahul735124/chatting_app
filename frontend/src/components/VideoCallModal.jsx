@@ -36,6 +36,7 @@ const VideoCallModal = () => {
     if (isReceivingCall && !callAccepted) {
         return (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <audio src="https://assets.mixkit.co/active_storage/sfx/1354/1354-preview.mp3" autoPlay loop />
                 <div className="bg-zinc-800 p-8 rounded-2xl flex flex-col items-center gap-4 animate-bounce">
                     <div className="avatar placeholder">
                         <div className="bg-neutral text-neutral-content rounded-full w-24">

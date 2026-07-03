@@ -137,7 +137,7 @@ const MessageContainer = () => {
             {
                 selectedUser !== null ? (
                     <div className='flex-1 h-full w-full flex flex-col bg-zinc-900/50 md:bg-transparent'>
-                        <div className='flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
+                        <div className='relative z-50 flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
                             
                             {!isSelectionMode ? (
                                 <>
@@ -170,7 +170,7 @@ const MessageContainer = () => {
                                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
                                             <IoEllipsisVertical size={24} />
                                         </div>
-                                        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-zinc-700 rounded-box w-52">
+                                        <ul tabIndex={0} className="dropdown-content z-50 menu p-2 shadow bg-zinc-700 rounded-box w-52">
                                             <li><button onClick={() => setIsSelectionMode(true)}>Select Messages</button></li>
                                             <li><button onClick={handleSummarizeChat} disabled={isSummarizing} className="text-emerald-400">✨ Summarize Chat</button></li>
                                             <li><button onClick={handleBlockUser} disabled={isBlocking} className="text-orange-400">{isBlocked ? "Unblock User" : "Block User"}</button></li>
@@ -193,7 +193,7 @@ const MessageContainer = () => {
                                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle text-red-500 hover:bg-zinc-700">
                                                 <IoTrash size={24} />
                                             </div>
-                                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-zinc-700 rounded-box w-52 mt-4">
+                                            <ul tabIndex={0} className="dropdown-content z-50 menu p-2 shadow bg-zinc-700 rounded-box w-52 mt-4">
                                                 <li><button onClick={() => handleDeleteSelected('FOR_ME')}>Delete for me</button></li>
                                                 <li><button onClick={() => handleDeleteSelected('FOR_EVERYONE')}>Delete for everyone</button></li>
                                             </ul>
@@ -210,12 +210,7 @@ const MessageContainer = () => {
                         />
                         
                         {!isSelectionMode && (
-                            isBlocked ? (
-                                <div className="p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
-                                    <IoWarning size={24} className="mx-auto mb-2 text-orange-400" />
-                                    You have blocked this user. Unblock to send messages.
-                                </div>
-                            ) : amIBlocked ? (
+                            amIBlocked ? (
                                 <div className="p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
                                     <IoWarning size={24} className="mx-auto mb-2 text-red-400" />
                                     You cannot reply to this conversation.
