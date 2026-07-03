@@ -7,12 +7,12 @@ import { Provider } from "react-redux";
 import store from './redux/store';
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistStore } from 'redux-persist';
+import axios from 'axios';
 
 let persistor = persistStore(store);
 
 export const BASE_URL = process.env.REACT_APP_BACKEND_URL || "https://chatting-app-dsoo.onrender.com";
 
-import axios from 'axios';
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");

@@ -5,6 +5,9 @@ const messageSlice = createSlice({
     initialState:{
         messages:null,
         replyingToMessage: null,
+        aiSuggestions: [],
+        isAiLoading: false,
+        aiCompletion: "",
     },
     reducers:{
         setMessages:(state,action)=>{
@@ -40,8 +43,17 @@ const messageSlice = createSlice({
         },
         setReplyingToMessage: (state, action) => {
             state.replyingToMessage = action.payload;
+        },
+        setAiSuggestions: (state, action) => {
+            state.aiSuggestions = action.payload;
+        },
+        setIsAiLoading: (state, action) => {
+            state.isAiLoading = action.payload;
+        },
+        setAiCompletion: (state, action) => {
+            state.aiCompletion = action.payload;
         }
     }
 });
-export const {setMessages, removeMessages, censorMessages, markMessagesAsRead, updateMessageReaction, setReplyingToMessage} = messageSlice.actions;
+export const {setMessages, removeMessages, censorMessages, markMessagesAsRead, updateMessageReaction, setReplyingToMessage, setAiSuggestions, setIsAiLoading, setAiCompletion} = messageSlice.actions;
 export default messageSlice.reducer;

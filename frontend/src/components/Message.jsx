@@ -40,11 +40,13 @@ const Message = ({message, isSelectionMode, isSelected, toggleSelection}) => {
             
             <div className={`chat ${isAuthUser ? 'chat-end' : 'chat-start'} flex-1 group`}>
                 <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                        <img alt="profile" src={isAuthUser ? authUser?.profilePhoto  : selectedUser?.profilePhoto } />
+                    <div className={`w-10 rounded-full ${message.isBot ? 'ring ring-emerald-500 ring-offset-base-100 ring-offset-2' : ''}`}>
+                        <img alt="profile" src={message.isBot ? "https://cdn-icons-png.flaticon.com/512/8649/8649603.png" : (isAuthUser ? authUser?.profilePhoto  : selectedUser?.profilePhoto) } />
                     </div>
                 </div>
-                <div className={`chat-bubble relative ${!isAuthUser ? 'bg-gray-200 text-black' : ''} ${message.message === "🚫 This message was deleted" || message.isDeleted ? 'italic text-gray-500' : ''} flex flex-col gap-2`}>
+                <div className={`chat-bubble relative ${message.isBot ? 'bg-zinc-800 text-emerald-50 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.15)]' : (!isAuthUser ? 'bg-gray-200 text-black' : '')} ${message.message === "🚫 This message was deleted" || message.isDeleted ? 'italic text-gray-500' : ''} flex flex-col gap-2`}>
+                    
+                    {message.isBot && <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-0.5 flex items-center gap-1">✨ AI Assistant</div>}
                     
                     {message.replyTo && (
                         <div className="bg-black/20 p-2 rounded-md text-xs border-l-4 border-emerald-500 mb-1 opacity-80 cursor-pointer" onClick={() => {

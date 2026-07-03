@@ -24,18 +24,15 @@ const userSlice = createSlice({
         },
         addTypingUser:(state, action)=>{
             const userId = action.payload;
-            if(!state.typingUserIds) {
-                state.typingUserIds = [];
-            }
-            if(!state.typingUserIds.includes(userId)) {
-                state.typingUserIds.push(userId);
+            const current = state.typingUserIds || [];
+            if(!current.includes(userId)) {
+                state.typingUserIds = [...current, userId];
             }
         },
         removeTypingUser:(state, action)=>{
             const userId = action.payload;
-            if(state.typingUserIds) {
-                state.typingUserIds = state.typingUserIds.filter(id => id !== userId);
-            }
+            const current = state.typingUserIds || [];
+            state.typingUserIds = current.filter(id => id !== userId);
         },
         updateLastSeen:(state, action)=>{
             const { userId, lastSeen } = action.payload;

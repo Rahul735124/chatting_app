@@ -16,6 +16,7 @@ const MessageContainer = () => {
 
     const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [selectedMessages, setSelectedMessages] = useState([]);
+    const [isSummarizing, setIsSummarizing] = useState(false);
     const { socket } = useSelector(store => store.socket);
 
     const isOnline = onlineUsers?.includes(selectedUser?._id);
@@ -49,6 +50,28 @@ const MessageContainer = () => {
         } catch (error) {
             console.log(error);
             toast.error("Failed to clear chat");
+        }
+    };
+
+    const handleSummarizeChat = async () => {
+        if (!messages || messages.length === 0) return toast.error("No messages to summarize");
+        setIsSummarizing(true);
+        const last50Messages = messages.slice(-50).map(m => ({
+            sender: m.senderId === authUser._id ? 'Me' : selectedUser.fullName,
+            text: m.message
+        }));
+        
+        const toastId = toast.loading("Summarizing chat...");
+        try {
+            const res = await axios.post(`${BASE_URL}/api/v1/ai/summarize`, { messages: last50Messages }, { withCredentials: true });
+            toast.dismiss(toastId);
+            toast(res.data.summary, { duration: 8000, icon: '✨' });
+        } catch (error) {
+            console.log(error);
+            toast.dismiss(toastId);
+            toast.error("Failed to summarize chat");
+        } finally {
+            setIsSummarizing(false);
         }
     };
 
@@ -123,6 +146,7 @@ const MessageContainer = () => {
                                         </div>
                                         <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-zinc-700 rounded-box w-52">
                                             <li><button onClick={() => setIsSelectionMode(true)}>Select Messages</button></li>
+                                            <li><button onClick={handleSummarizeChat} disabled={isSummarizing} className="text-emerald-400">✨ Summarize Chat</button></li>
                                             <li><button onClick={handleClearChat} className="text-red-400">Clear Chat</button></li>
                                         </ul>
                                     </div>

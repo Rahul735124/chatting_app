@@ -41,9 +41,6 @@ const ProfileModal = () => {
 
         try {
             const res = await axios.post(`${BASE_URL}/api/v1/user/update-profile`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
                 withCredentials: true
             });
             

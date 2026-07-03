@@ -30,7 +30,6 @@ const StatusBar = () => {
 
         try {
             const res = await axios.post(`${BASE_URL}/api/v1/status/upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
                 withCredentials: true
             });
 
