@@ -161,7 +161,7 @@ const MessageContainer = () => {
                                     </div>
 
                                     {/* Video Call Button */}
-                                    <button onClick={() => callUser(selectedUser._id)} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700">
+                                    <button onClick={() => callUser(selectedUser._id)} disabled={isBlocked || amIBlocked} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700 disabled:opacity-50">
                                         <IoVideocam size={24} />
                                     </button>
 
@@ -210,10 +210,10 @@ const MessageContainer = () => {
                         />
                         
                         {!isSelectionMode && (
-                            amIBlocked ? (
+                            (isBlocked || amIBlocked) ? (
                                 <div className="flex-shrink-0 p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
                                     <IoWarning size={24} className="mx-auto mb-2 text-red-400" />
-                                    You cannot reply to this conversation.
+                                    {isBlocked ? "You blocked this user. Unblock to send a message." : "You cannot reply to this conversation."}
                                 </div>
                             ) : (
                                 <div className="flex-shrink-0 bg-zinc-900/80 md:bg-transparent pb-0">

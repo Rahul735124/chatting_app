@@ -229,6 +229,8 @@ const SendInput = () => {
                         onChange={handleTyping}
                         onKeyDown={acceptCompletion}
                         type="text"
+                        autoComplete="off"
+                        autoCorrect="off"
                         placeholder='Send a message...'
                         className='border-none text-base block w-full p-3 bg-transparent text-white outline-none z-10 relative'
                     />

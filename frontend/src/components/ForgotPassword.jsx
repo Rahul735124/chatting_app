@@ -99,8 +99,9 @@ const ForgotPassword = () => {
                             value={user.newPassword}
                             onChange={(e) => setUser({ ...user, newPassword: e.target.value })}
                             className='w-full input input-bordered h-10'
-                            type="password"
-                            autoComplete="new-password"
+                            type="text"
+                            style={{ WebkitTextSecurity: "disc" }}
+                            autoComplete="off"
                             placeholder='Enter new password' required />
                     </div>
                     

@@ -62,8 +62,9 @@ const Login = () => {
               value={user.password}
               onChange={(e) => setUser({ ...user, password: e.target.value })}
               className='w-full input input-bordered h-10'
-              type="password"
-              autoComplete="current-password"
+              type="text"
+              style={{ WebkitTextSecurity: "disc" }}
+              autoComplete="off"
               placeholder='Password' />
           </div>
           <div className='flex justify-between items-center my-2'>

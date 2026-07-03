@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useVideoCall } from '../hooks/useVideoCall';
-import { IoCall, IoClose } from 'react-icons/io5';
+import { IoCall, IoClose, IoMic, IoMicOff, IoVolumeHigh, IoVolumeMute } from 'react-icons/io5';
 import { MdCallEnd } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
@@ -20,13 +20,33 @@ const VideoCallModal = () => {
 
     const { selectedUser } = useSelector(store => store.user);
 
+    const [isMuted, setIsMuted] = useState(false);
+    const [isSpeakerOn, setIsSpeakerOn] = useState(true);
+
+    const toggleMute = () => {
+        if (localStream && localStream.getAudioTracks().length > 0) {
+            const audioTrack = localStream.getAudioTracks()[0];
+            audioTrack.enabled = !audioTrack.enabled;
+            setIsMuted(!audioTrack.enabled);
+        }
+    };
+
+    const toggleSpeaker = () => {
+        if (userVideo.current) {
+            userVideo.current.muted = isSpeakerOn; // If speaker is on, we are turning it off (muting)
+            setIsSpeakerOn(!isSpeakerOn);
+        }
+    };
+
     // Auto-play streams when available
     useEffect(() => {
         if (remoteStream && userVideo.current) {
             userVideo.current.srcObject = remoteStream;
+            userVideo.current.play().catch(e => console.error("Remote video play error:", e));
         }
         if (localStream && myVideo.current) {
             myVideo.current.srcObject = localStream;
+            myVideo.current.play().catch(e => console.error("Local video play error:", e));
         }
     }, [remoteStream, localStream, callAccepted, isCalling, userVideo, myVideo]);
 
@@ -90,9 +110,17 @@ const VideoCallModal = () => {
                     )}
 
                     {/* Controls */}
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6">
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-zinc-900/60 px-6 py-3 rounded-full backdrop-blur-md border border-white/10">
+                        <button onClick={toggleMute} className={`btn btn-circle ${isMuted ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
+                            {isMuted ? <IoMicOff size={24} /> : <IoMic size={24} />}
+                        </button>
+                        
                         <button onClick={endCall} className="btn btn-error text-white shadow-lg shadow-red-500/50 px-8 py-3 rounded-full text-lg font-semibold flex items-center gap-2">
                             <MdCallEnd size={28} /> Hang Up
+                        </button>
+
+                        <button onClick={toggleSpeaker} className={`btn btn-circle ${!isSpeakerOn ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
+                            {!isSpeakerOn ? <IoVolumeMute size={24} /> : <IoVolumeHigh size={24} />}
                         </button>
                     </div>
                 </div>

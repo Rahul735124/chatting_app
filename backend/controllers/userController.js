@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs";
+import { io, getReceiverSocketId } from "../socket/socket.js";
 
 
 
@@ -211,6 +212,14 @@ export const toggleBlockUser = async (req, res) => {
                 { $push: { blockedUsers: targetUserId } },
                 { new: true }
             ).select("-password");
+        }
+
+        const targetSocketId = getReceiverSocketId(targetUserId);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("blockStatusChanged", {
+                userId: loggedInUserId,
+                isBlocked: !isBlocked
+            });
         }
 
         return res.status(200).json({

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import {useSelector, useDispatch} from "react-redux";
 import { setMessages, censorMessages, markMessagesAsRead, updateMessageReaction } from "../redux/messageSlice";
-import { incrementUnreadCount, addTypingUser, removeTypingUser, updateLastSeen } from "../redux/userSlice";
+import { incrementUnreadCount, addTypingUser, removeTypingUser, updateLastSeen, updateOtherUserBlockStatus } from "../redux/userSlice";
 
 const useGetRealTimeMessage = () => {
     const {socket} = useSelector(store=>store.socket);
     const {messages} = useSelector(store=>store.message);
-    const {selectedUser} = useSelector(store=>store.user);
+    const {selectedUser, authUser} = useSelector(store=>store.user);
     const dispatch = useDispatch();
 
     useEffect(()=>{
@@ -43,6 +43,14 @@ const useGetRealTimeMessage = () => {
             dispatch(updateMessageReaction(updatedMessage));
         });
 
+        socket?.on("blockStatusChanged", ({ userId, isBlocked }) => {
+            dispatch(updateOtherUserBlockStatus({
+                userId,
+                isBlocked,
+                myId: authUser?._id
+            }));
+        });
+
         return () => {
             socket?.off("newMessage");
             socket?.off("messagesDeleted");
@@ -51,7 +59,8 @@ const useGetRealTimeMessage = () => {
             socket?.off("lastSeenUpdate");
             socket?.off("messagesRead");
             socket?.off("messageReacted");
+            socket?.off("blockStatusChanged");
         }
-    },[messages, selectedUser, socket, dispatch]);
+    },[messages, selectedUser, socket, dispatch, authUser]);
 };
 export default useGetRealTimeMessage;

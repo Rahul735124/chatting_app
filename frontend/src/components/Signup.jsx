@@ -78,8 +78,9 @@ const Signup = () => {
               value={user.password}
               onChange={(e) => setUser({ ...user, password: e.target.value })}
               className='w-full input input-bordered h-10'
-              type="password"
-              autoComplete="new-password"
+              type="text"
+              style={{ WebkitTextSecurity: "disc" }}
+              autoComplete="off"
               placeholder='Password' />
           </div>
           <div>
@@ -90,8 +91,9 @@ const Signup = () => {
               value={user.confirmPassword}
               onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
               className='w-full input input-bordered h-10'
-              type="password"
-              autoComplete="new-password"
+              type="text"
+              style={{ WebkitTextSecurity: "disc" }}
+              autoComplete="off"
               placeholder='Confirm Password' />
           </div>
           <div className='flex items-center my-4'>

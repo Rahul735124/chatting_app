@@ -14,6 +14,7 @@ export const useVideoCall = () => {
     const myVideo = useRef();
     const userVideo = useRef();
     const connectionRef = useRef();
+    const pendingCandidates = useRef([]);
 
     useEffect(() => {
         if (!socket) return;
@@ -31,6 +32,10 @@ export const useVideoCall = () => {
             try {
                 if (connectionRef.current) {
                     await connectionRef.current.setRemoteDescription(new RTCSessionDescription(signal));
+                    for (const candidate of pendingCandidates.current) {
+                        await connectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+                    }
+                    pendingCandidates.current = [];
                 }
             } catch (err) {
                 console.error("Error setting remote description on accept:", err);
@@ -39,8 +44,10 @@ export const useVideoCall = () => {
 
         socket.on("iceCandidate", async (candidate) => {
             try {
-                if (connectionRef.current) {
+                if (connectionRef.current && connectionRef.current.remoteDescription) {
                     await connectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+                } else {
+                    pendingCandidates.current.push(candidate);
                 }
             } catch (err) {
                 console.error("Error adding ice candidate:", err);
@@ -145,6 +152,12 @@ export const useVideoCall = () => {
         };
 
         await peer.setRemoteDescription(new RTCSessionDescription(callerInfo.signal));
+        
+        for (const candidate of pendingCandidates.current) {
+            await peer.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+        pendingCandidates.current = [];
+
         const answer = await peer.createAnswer();
         await peer.setLocalDescription(answer);
 
@@ -170,14 +183,17 @@ export const useVideoCall = () => {
 
         dispatch(setCallEnded(true));
         
-        if (emit && callPartnerId) {
-            socket.emit("endCall", { to: callPartnerId });
+        const partner = callPartnerId || callerInfo?.from;
+        if (emit && partner) {
+            socket.emit("endCall", { to: partner });
         }
         
         if (connectionRef.current) {
             connectionRef.current.close();
             connectionRef.current = null;
         }
+        
+        pendingCandidates.current = [];
 
         dispatch(resetCallState());
     };
