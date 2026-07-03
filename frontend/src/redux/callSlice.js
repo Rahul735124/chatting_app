@@ -9,6 +9,7 @@ const callSlice = createSlice({
     callEnded: false,
     isCalling: false, // when current user is calling someone
     callPartnerId: null, // the user being called or calling us
+    initiateCallTo: null, // used to trigger a call from anywhere
   },
   reducers: {
     setIncomingCall: (state, action) => {
@@ -37,6 +38,9 @@ const callSlice = createSlice({
       state.callEnded = false;
       state.callAccepted = false;
     },
+    setInitiateCallTo: (state, action) => {
+      state.initiateCallTo = action.payload;
+    },
     resetCallState: (state) => {
       state.isReceivingCall = false;
       state.callerInfo = null;
@@ -48,5 +52,5 @@ const callSlice = createSlice({
   }
 });
 
-export const { setIncomingCall, setCallAccepted, setCallEnded, setIsCalling, resetCallState } = callSlice.actions;
+export const { setIncomingCall, setCallAccepted, setCallEnded, setIsCalling, setInitiateCallTo, resetCallState } = callSlice.actions;
 export default callSlice.reducer;

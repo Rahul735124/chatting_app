@@ -110,17 +110,18 @@ const VideoCallModal = () => {
                     )}
 
                     {/* Controls */}
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-zinc-900/60 px-6 py-3 rounded-full backdrop-blur-md border border-white/10">
-                        <button onClick={toggleMute} className={`btn btn-circle ${isMuted ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
-                            {isMuted ? <IoMicOff size={24} /> : <IoMic size={24} />}
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 md:gap-4 bg-zinc-900/60 px-4 md:px-6 py-2 md:py-3 rounded-full backdrop-blur-md border border-white/10 w-[90%] md:w-auto justify-center">
+                        <button onClick={toggleMute} className={`btn btn-sm md:btn-md btn-circle ${isMuted ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
+                            {isMuted ? <IoMicOff size={20} className="md:w-6 md:h-6" /> : <IoMic size={20} className="md:w-6 md:h-6" />}
                         </button>
                         
-                        <button onClick={endCall} className="btn btn-error text-white shadow-lg shadow-red-500/50 px-8 py-3 rounded-full text-lg font-semibold flex items-center gap-2">
-                            <MdCallEnd size={28} /> Hang Up
+                        <button onClick={endCall} className="btn btn-sm md:btn-md btn-error text-white shadow-lg shadow-red-500/50 px-4 md:px-8 py-0 rounded-full text-sm md:text-lg font-semibold flex items-center gap-1 md:gap-2">
+                            <MdCallEnd size={20} className="md:w-7 md:h-7" /> 
+                            <span className="whitespace-nowrap">Hang Up</span>
                         </button>
 
-                        <button onClick={toggleSpeaker} className={`btn btn-circle ${!isSpeakerOn ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
-                            {!isSpeakerOn ? <IoVolumeMute size={24} /> : <IoVolumeHigh size={24} />}
+                        <button onClick={toggleSpeaker} className={`btn btn-sm md:btn-md btn-circle ${!isSpeakerOn ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
+                            {!isSpeakerOn ? <IoVolumeMute size={20} className="md:w-6 md:h-6" /> : <IoVolumeHigh size={20} className="md:w-6 md:h-6" />}
                         </button>
                     </div>
                 </div>

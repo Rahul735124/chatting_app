@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setSelectedUser, updateBlockedUsers } from '../redux/userSlice';
 import { removeMessages, censorMessages, setMessages } from '../redux/messageSlice';
 import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam, IoWarning } from "react-icons/io5";
-import { useVideoCall } from '../hooks/useVideoCall';
+import { setInitiateCallTo } from '../redux/callSlice';
 import axios from 'axios';
 import { BASE_URL } from '..';
 import toast from 'react-hot-toast';
@@ -20,7 +20,6 @@ const MessageContainer = () => {
     const [isSummarizing, setIsSummarizing] = useState(false);
     const [isBlocking, setIsBlocking] = useState(false);
     const { socket } = useSelector(store => store.socket);
-    const { callUser } = useVideoCall();
 
     const isOnline = onlineUsers?.includes(selectedUser?._id);
     const isBlocked = authUser?.blockedUsers?.includes(selectedUser?._id);
@@ -161,7 +160,7 @@ const MessageContainer = () => {
                                     </div>
 
                                     {/* Video Call Button */}
-                                    <button onClick={() => callUser(selectedUser._id)} disabled={isBlocked || amIBlocked} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700 disabled:opacity-50">
+                                    <button onClick={() => dispatch(setInitiateCallTo(selectedUser._id))} disabled={isBlocked || amIBlocked} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700 disabled:opacity-50">
                                         <IoVideocam size={24} />
                                     </button>
 

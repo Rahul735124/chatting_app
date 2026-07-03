@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIncomingCall, setCallAccepted, setCallEnded, resetCallState, setIsCalling } from '../redux/callSlice';
+import { setIncomingCall, setCallAccepted, setCallEnded, resetCallState, setIsCalling, setInitiateCallTo } from '../redux/callSlice';
+import toast from 'react-hot-toast';
 
 export const useVideoCall = () => {
     const dispatch = useDispatch();
     const { socket } = useSelector((store) => store.socket);
     const { authUser } = useSelector((store) => store.user);
-    const { isReceivingCall, callerInfo, callAccepted, callEnded, isCalling, callPartnerId } = useSelector((store) => store.call);
+    const { isReceivingCall, callerInfo, callAccepted, callEnded, isCalling, callPartnerId, initiateCallTo } = useSelector((store) => store.call);
 
     const [localStream, setLocalStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
@@ -67,6 +68,14 @@ export const useVideoCall = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket, isReceivingCall, isCalling, callAccepted, dispatch]);
 
+    useEffect(() => {
+        if (initiateCallTo) {
+            callUser(initiateCallTo);
+            dispatch(setInitiateCallTo(null));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initiateCallTo, dispatch]);
+
     const initMedia = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -77,14 +86,17 @@ export const useVideoCall = () => {
             return stream;
         } catch (error) {
             console.error("Failed to get media devices:", error);
-            // toast error?
+            toast.error("Please allow camera and microphone permissions to continue.");
             return null;
         }
     };
 
     const callUser = async (userToCall) => {
         const stream = await initMedia();
-        if (!stream) return;
+        if (!stream) {
+            dispatch(resetCallState());
+            return;
+        }
 
         dispatch(setIsCalling({ partnerId: userToCall }));
 
@@ -124,7 +136,10 @@ export const useVideoCall = () => {
 
     const answerCall = async () => {
         const stream = await initMedia();
-        if (!stream) return;
+        if (!stream) {
+            handleEndCall(true);
+            return;
+        }
 
         dispatch(setCallAccepted(true));
 
