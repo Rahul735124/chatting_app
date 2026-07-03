@@ -136,8 +136,8 @@ const MessageContainer = () => {
         <>
             {
                 selectedUser !== null ? (
-                    <div className='flex-1 h-full w-full flex flex-col bg-zinc-900/50 md:bg-transparent'>
-                        <div className='relative z-50 flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
+                    <div className='flex-1 h-full w-full flex flex-col bg-zinc-900/50 md:bg-transparent overflow-hidden'>
+                        <div className='flex-shrink-0 relative z-50 flex gap-2 items-center bg-zinc-900/80 backdrop-blur-md text-white px-4 py-3 border-b border-white/5'>
                             
                             {!isSelectionMode ? (
                                 <>
@@ -211,12 +211,14 @@ const MessageContainer = () => {
                         
                         {!isSelectionMode && (
                             amIBlocked ? (
-                                <div className="p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
+                                <div className="flex-shrink-0 p-4 text-center text-gray-400 bg-zinc-800/50 m-4 rounded-xl border border-white/5">
                                     <IoWarning size={24} className="mx-auto mb-2 text-red-400" />
                                     You cannot reply to this conversation.
                                 </div>
                             ) : (
-                                <SendInput />
+                                <div className="flex-shrink-0 bg-zinc-900/80 md:bg-transparent pb-2">
+                                    <SendInput />
+                                </div>
                             )
                         )}
                     </div>

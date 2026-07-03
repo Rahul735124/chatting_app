@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {useSelector, useDispatch} from "react-redux";
 import { setReplyingToMessage } from "../redux/messageSlice";
 
 const Message = ({message, isSelectionMode, isSelected, toggleSelection}) => {
     const scroll = useRef();
+    const [showActions, setShowActions] = useState(false);
     const dispatch = useDispatch();
     const {authUser, selectedUser, onlineUsers} = useSelector(store=>store.user);
     const { socket } = useSelector(store => store.socket);
@@ -44,7 +45,10 @@ const Message = ({message, isSelectionMode, isSelected, toggleSelection}) => {
                         <img alt="profile" src={message.isBot ? "https://cdn-icons-png.flaticon.com/512/8649/8649603.png" : (isAuthUser ? authUser?.profilePhoto  : selectedUser?.profilePhoto) } />
                     </div>
                 </div>
-                <div className={`chat-bubble relative ${message.isBot ? 'bg-zinc-800 text-emerald-50 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.15)]' : (!isAuthUser ? 'bg-gray-200 text-black' : '')} ${message.message === "🚫 This message was deleted" || message.isDeleted ? 'italic text-gray-500' : ''} flex flex-col gap-2`}>
+                <div 
+                    className={`chat-bubble relative ${message.isBot ? 'bg-zinc-800 text-emerald-50 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.15)]' : (!isAuthUser ? 'bg-gray-200 text-black' : '')} ${message.message === "🚫 This message was deleted" || message.isDeleted ? 'italic text-gray-500' : ''} flex flex-col gap-2`}
+                    onDoubleClick={() => setShowActions(!showActions)}
+                >
                     
                     {message.isBot && <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-0.5 flex items-center gap-1">✨ AI Assistant</div>}
                     
@@ -76,14 +80,14 @@ const Message = ({message, isSelectionMode, isSelected, toggleSelection}) => {
                     )}
 
                     {!isSelectionMode && (
-                        <div className={`hidden group-hover:flex absolute -top-8 ${isAuthUser ? 'right-0' : 'left-0'} bg-zinc-800 rounded-full px-2 py-1 gap-2 shadow-lg border border-zinc-600 z-50 items-center`}>
+                        <div className={`${showActions ? 'flex' : 'hidden group-hover:flex'} absolute -bottom-10 ${isAuthUser ? 'right-0' : 'left-0'} bg-zinc-800 rounded-full px-2 py-1 gap-2 shadow-lg border border-zinc-600 z-[60] items-center`}>
                             {["👍", "❤️", "😂", "😮", "😢", "🙏"].map(emoji => (
-                                <button key={emoji} onClick={(e) => { e.stopPropagation(); handleReaction(emoji); }} className="hover:scale-125 transition-transform text-lg">
+                                <button key={emoji} onClick={(e) => { e.stopPropagation(); handleReaction(emoji); setShowActions(false); }} className="hover:scale-125 transition-transform text-lg">
                                     {emoji}
                                 </button>
                             ))}
                             <div className="w-[1px] h-5 bg-gray-500 mx-1"></div>
-                            <button onClick={(e) => { e.stopPropagation(); dispatch(setReplyingToMessage(message)); }} className="hover:scale-125 transition-transform text-gray-300 px-1 font-bold text-xs flex items-center gap-1">
+                            <button onClick={(e) => { e.stopPropagation(); dispatch(setReplyingToMessage(message)); setShowActions(false); }} className="hover:scale-125 transition-transform text-gray-300 px-1 font-bold text-xs flex items-center gap-1">
                                 ↩️
                             </button>
                         </div>
