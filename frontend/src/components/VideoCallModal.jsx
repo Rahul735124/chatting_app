@@ -127,7 +127,7 @@ const VideoCallModal = () => {
                     )}
 
                     {/* Controls */}
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 md:gap-4 bg-zinc-900/60 px-4 md:px-6 py-2 md:py-3 rounded-full backdrop-blur-md border border-white/10 w-[90%] md:w-auto justify-center">
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 md:gap-4 bg-zinc-900/60 px-4 md:px-6 py-2 md:py-3 rounded-full backdrop-blur-md border border-white/10 w-[90%] md:w-auto justify-center z-50">
                         <button onClick={toggleMute} className={`btn btn-sm md:btn-md btn-circle ${isMuted ? 'btn-error' : 'btn-ghost text-white hover:bg-zinc-700'}`}>
                             {isMuted ? <IoMicOff size={20} className="md:w-6 md:h-6" /> : <IoMic size={20} className="md:w-6 md:h-6" />}
                         </button>
