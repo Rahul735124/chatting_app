@@ -78,7 +78,7 @@ export const useVideoCall = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initiateCallTo, dispatch]);
 
-    const initMedia = async (type = callType) => {
+    const initMedia = async (type = callType || 'video') => {
         try {
             const constraints = type === 'audio' 
                 ? { video: false, audio: true }

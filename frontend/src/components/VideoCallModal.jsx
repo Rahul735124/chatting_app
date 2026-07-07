@@ -88,25 +88,25 @@ const VideoCallModal = () => {
                 <div className="relative flex-1 w-full h-full">
                     {/* Remote Video or Audio Avatar (Full Screen) */}
                     {callAccepted ? (
-                        callType === 'video' ? (
+                        <div className="w-full h-full relative bg-zinc-900">
                             <video
                                 playsInline
                                 ref={userVideo}
                                 autoPlay
-                                className="w-full h-full object-cover"
+                                className={`w-full h-full object-cover ${callType === 'audio' ? 'hidden' : ''}`}
                             />
-                        ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-800">
-                                <div className="avatar placeholder mb-4 animate-pulse">
-                                    <div className="bg-neutral text-neutral-content rounded-full w-32 h-32 md:w-48 md:h-48">
-                                        <span className="text-5xl">{selectedUser?.fullName?.charAt(0) || callerInfo?.name?.charAt(0)}</span>
+                            {callType === 'audio' && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 z-10">
+                                    <div className="avatar placeholder mb-4 animate-pulse">
+                                        <div className="bg-neutral text-neutral-content rounded-full w-32 h-32 md:w-48 md:h-48">
+                                            <span className="text-5xl">{selectedUser?.fullName?.charAt(0) || callerInfo?.name?.charAt(0)}</span>
+                                        </div>
                                     </div>
+                                    <h2 className="text-white text-2xl font-semibold">{selectedUser?.fullName || callerInfo?.name}</h2>
+                                    <p className="text-green-400 mt-2">Audio Call</p>
                                 </div>
-                                <h2 className="text-white text-2xl font-semibold">{selectedUser?.fullName || callerInfo?.name}</h2>
-                                <p className="text-green-400 mt-2">Audio Call</p>
-                                <audio ref={userVideo} autoPlay className="hidden" />
-                            </div>
-                        )
+                            )}
+                        </div>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-white text-2xl">
                             Calling {selectedUser?.fullName || callerInfo?.name || "User"}...
@@ -114,8 +114,8 @@ const VideoCallModal = () => {
                     )}
 
                     {/* Local Video (Floating bottom right) */}
-                    {localStream && callType === 'video' && (
-                        <div className="absolute bottom-24 right-4 w-32 h-48 md:w-48 md:h-72 bg-zinc-800 rounded-xl overflow-hidden shadow-2xl border-2 border-zinc-700">
+                    {localStream && callType !== 'audio' && (
+                        <div className="absolute bottom-24 right-4 w-32 h-48 md:w-48 md:h-72 bg-zinc-800 rounded-xl overflow-hidden shadow-2xl border-2 border-zinc-700 z-20">
                             <video
                                 playsInline
                                 muted
