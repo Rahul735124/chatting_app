@@ -102,10 +102,10 @@ io.on("connection", (socket) => {
   });
 
   // WebRTC Video Call Signaling
-  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+  socket.on("callUser", ({ userToCall, signalData, from, name, type }) => {
     const receiverSocketId = getReceiverSocketId(userToCall);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("callUser", { signal: signalData, from, name });
+      io.to(receiverSocketId).emit("callUser", { signal: signalData, from, name, type });
     }
   });
 

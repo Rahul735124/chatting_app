@@ -8,7 +8,7 @@ export const useVideoCall = () => {
     const dispatch = useDispatch();
     const { socket } = useSelector((store) => store.socket);
     const { authUser, otherUsers } = useSelector((store) => store.user);
-    const { isReceivingCall, callerInfo, callAccepted, callEnded, isCalling, callPartnerId, initiateCallTo } = useSelector((store) => store.call);
+    const { isReceivingCall, callerInfo, callAccepted, callEnded, isCalling, callPartnerId, initiateCallTo, callType } = useSelector((store) => store.call);
 
     const [localStream, setLocalStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
@@ -27,7 +27,7 @@ export const useVideoCall = () => {
                 // If already in a call, we could send a busy signal, but for now ignore
                 return;
             }
-            dispatch(setIncomingCall({ from: data.from, name: data.name, signal: data.signal }));
+            dispatch(setIncomingCall({ from: data.from, name: data.name, signal: data.signal, type: data.type }));
         });
 
         socket.on("callAccepted", async (signal) => {
@@ -72,15 +72,18 @@ export const useVideoCall = () => {
 
     useEffect(() => {
         if (initiateCallTo) {
-            callUser(initiateCallTo);
+            callUser(initiateCallTo.userId, initiateCallTo.type);
             dispatch(setInitiateCallTo(null));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initiateCallTo, dispatch]);
 
-    const initMedia = async () => {
+    const initMedia = async (type = callType) => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: true });
+            const constraints = type === 'audio' 
+                ? { video: false, audio: true }
+                : { video: { facingMode }, audio: true };
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             setLocalStream(stream);
             if (myVideo.current) {
                 myVideo.current.srcObject = stream;
@@ -125,14 +128,14 @@ export const useVideoCall = () => {
         }
     };
 
-    const callUser = async (userToCall) => {
-        const stream = await initMedia();
+    const callUser = async (userToCall, type) => {
+        const stream = await initMedia(type);
         if (!stream) {
             dispatch(resetCallState());
             return;
         }
 
-        dispatch(setIsCalling({ partnerId: userToCall }));
+        dispatch(setIsCalling({ partnerId: userToCall, type }));
 
         const peer = new RTCPeerConnection({
             iceServers: [
@@ -165,11 +168,12 @@ export const useVideoCall = () => {
             signalData: offer,
             from: authUser._id,
             name: authUser.fullName,
+            type
         });
     };
 
     const answerCall = async () => {
-        const stream = await initMedia();
+        const stream = await initMedia(callType);
         if (!stream) {
             handleEndCall(true);
             return;
@@ -269,6 +273,7 @@ export const useVideoCall = () => {
         callAccepted,
         callEnded,
         isCalling,
-        callPartnerId
+        callPartnerId,
+        callType
     };
 };

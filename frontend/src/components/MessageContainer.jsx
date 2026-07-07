@@ -4,7 +4,7 @@ import Messages from './Messages';
 import { useSelector, useDispatch } from "react-redux";
 import { setSelectedUser, updateBlockedUsers } from '../redux/userSlice';
 import { removeMessages, censorMessages, setMessages } from '../redux/messageSlice';
-import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam, IoWarning } from "react-icons/io5";
+import { IoArrowBack, IoTrash, IoEllipsisVertical, IoClose, IoVideocam, IoWarning, IoCall } from "react-icons/io5";
 import { setInitiateCallTo } from '../redux/callSlice';
 import axios from 'axios';
 import { BASE_URL } from '..';
@@ -159,10 +159,30 @@ const MessageContainer = () => {
                                         </p>
                                     </div>
 
-                                    {/* Video Call Button */}
-                                    <button onClick={() => dispatch(setInitiateCallTo(selectedUser._id))} disabled={isBlocked || amIBlocked} className="btn btn-ghost btn-circle text-white hover:bg-zinc-700 disabled:opacity-50">
-                                        <IoVideocam size={24} />
-                                    </button>
+                                    {/* Call Menu */}
+                                    <div className="dropdown dropdown-end">
+                                        <div tabIndex={0} role="button" className={`btn btn-ghost btn-circle text-white hover:bg-zinc-700 ${isBlocked || amIBlocked ? 'opacity-50 pointer-events-none' : ''}`}>
+                                            <IoVideocam size={24} />
+                                        </div>
+                                        <ul tabIndex={0} className="dropdown-content z-50 menu p-2 shadow bg-zinc-700 rounded-box w-44 mt-4">
+                                            <li>
+                                                <button onClick={() => {
+                                                    document.activeElement.blur();
+                                                    dispatch(setInitiateCallTo({ userId: selectedUser._id, type: 'audio' }));
+                                                }} className="flex items-center gap-2">
+                                                    <IoCall size={20} className="text-green-400" /> Audio Call
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => {
+                                                    document.activeElement.blur();
+                                                    dispatch(setInitiateCallTo({ userId: selectedUser._id, type: 'video' }));
+                                                }} className="flex items-center gap-2">
+                                                    <IoVideocam size={20} className="text-blue-400" /> Video Call
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
 
                                     {/* 3-dots Menu */}
                                     <div className="dropdown dropdown-end">

@@ -10,6 +10,7 @@ const callSlice = createSlice({
     isCalling: false, // when current user is calling someone
     callPartnerId: null, // the user being called or calling us
     initiateCallTo: null, // used to trigger a call from anywhere
+    callType: null, // 'audio' or 'video'
   },
   reducers: {
     setIncomingCall: (state, action) => {
@@ -18,6 +19,7 @@ const callSlice = createSlice({
       state.callPartnerId = action.payload.from;
       state.callEnded = false;
       state.callAccepted = false;
+      state.callType = action.payload.type;
     },
     setCallAccepted: (state, action) => {
       state.callAccepted = action.payload;
@@ -37,6 +39,7 @@ const callSlice = createSlice({
       state.callPartnerId = action.payload.partnerId;
       state.callEnded = false;
       state.callAccepted = false;
+      state.callType = action.payload.type;
     },
     setInitiateCallTo: (state, action) => {
       state.initiateCallTo = action.payload;
@@ -48,6 +51,7 @@ const callSlice = createSlice({
       state.callEnded = false;
       state.isCalling = false;
       state.callPartnerId = null;
+      state.callType = null;
     }
   }
 });
