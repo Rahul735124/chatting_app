@@ -34,13 +34,41 @@ app.use(cookieParser());
 // };
 // app.use(cors(corsOption)); 
 
-const corsOption = {
-    origin: [process.env.FRONTEND_URL || 'https://chatting-app-navy-eight.vercel.app', 'http://localhost:3000'],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+// const corsOption = {
+//     origin: [process.env.FRONTEND_URL || 'https://chatting-app-navy-eight.vercel.app', 'http://localhost:3000'],
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+// };
+// app.use(cors(corsOption));
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://chatting-app-navy-eight.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:5173", // if you use Vite during development
+  "https://localhost",     // Capacitor Android
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests without an Origin header (e.g. Postman, some mobile requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
-app.use(cors(corsOption));
+
+app.use(cors(corsOptions));
 
 
 
